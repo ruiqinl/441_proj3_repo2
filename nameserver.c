@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
       dbprintf("nameserver: recved %d bytes\n", recv_ret);
 
       query = parse_dns(query_buf);
-      print_dns(query);
+      //print_dns(query);
       
       if (round_robin) {
 	dbprintf("nameserver: round_rodin\n");

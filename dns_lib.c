@@ -324,10 +324,10 @@ struct sockaddr *parse_dns_reply(char *dns_reply) {
 
   reply = parse_dns(dns_reply);
   //assert(reply->RDLENGTH == 4);
-  printf("reply->RDLENGTH:%x\n", reply->RDLENGTH);
+  //printf("reply->RDLENGTH:%x\n", reply->RDLENGTH);
   assert(reply->RDATA != 0x00);
   
-  printf("parse_dns_reply: recvd ip is %x\n", reply->RDATA);
+  //printf("parse_dns_reply: recvd ip is %x\n", reply->RDATA);
   
   addr = (struct sockaddr_in *)calloc(1, sizeof(struct sockaddr_in));
 
