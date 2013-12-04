@@ -21,9 +21,12 @@ char *cnd_rr(struct dns_t *query, uint32_t server_ip, int *reply_len);
 
 char *cnd_geo_dist(struct dns_t *query, int *reply_len);
 
-struct server_t *get_serverlist(char *servers);
+struct list_node_t *get_serverlist(char *servers);
 int init_serverlist(struct server_t **list);
 int push_server(struct server_t *list, uint32_t ip);
 int print_serverlist(struct server_t *list);
+uint32_t next_server(struct list_node_t *list);
+
+void printer_hex(void *data);
 
 #endif
