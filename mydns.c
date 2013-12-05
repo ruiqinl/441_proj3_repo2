@@ -12,13 +12,15 @@
 
 static const char *dns_ip = NULL;
 static unsigned int dns_port = 0;
+static char *fakeip = NULL;
 
-int init_mydns(const char *ip, unsigned int port) {
+int init_mydns(const char *ip, unsigned int port, char *fake_ip) {
   assert(ip != NULL);
   assert(port > 0);
 
   dns_ip = ip;
   dns_port = port;
+  fakeip = fake_ip;
 
   return 0;
 }
@@ -34,6 +36,7 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
   int sock;
   int ret;  
   int query_len;
+  struct sockaddr_in fakeaddr;
 
   // make query packet
   //dns_query = make_dns_query(node, service);
@@ -53,6 +56,20 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
   
   if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
     perror("Error! mydns, socket");
+    exit(-1);
+  }
+
+  // bind to fakeip
+  memset(&fakeaddr, 0, sizeof(fakeaddr));
+  fakeaddr.sin_family = AF_INET;
+  fakeaddr.sin_port = htons(0);
+  if (inet_aton(fakeip, &fakeaddr.sin_addr) == 0) {
+    perror("Error! main, inet_aton");
+    exit(-1);
+  }
+
+  if (bind(sock, (struct sockaddr *)&fakeaddr, sizeof(fakeaddr)) == -1) {
+    perror("mydns: bind fakeip\n");
     exit(-1);
   }
 

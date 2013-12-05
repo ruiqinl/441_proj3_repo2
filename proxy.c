@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
       // cp2
       printf("proxy: init_mydns, and resolve\n");
 
-      init_mydns(dns_ip, dns_port);
+      init_mydns(dns_ip, dns_port, fake_ip);
       resolve(node, service, NULL, &res); // service is 8080
       server_addr = *(struct sockaddr_in *)(res->ai_addr);
       
