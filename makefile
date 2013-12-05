@@ -2,9 +2,9 @@ CC = gcc
 CFLAGS = -DDEBUG -Wall -g
 TESTFLAGS = -DTEST
 
-OBJS_proxy = proxy.o http_parser.o http_replyer.o helper.o mydns.o dns_lib.o list.o graph.o
-OBJS_nameserver = nameserver.o http_parser.o http_replyer.o helper.o mydns.o dns_lib.o list.o graph.o
-BINS_TEST = mydns_test nameserver_test dns_lib_test list_test
+OBJS_proxy = proxy.o http_parser.o http_replyer.o helper.o mydns.o dns_lib.o
+OBJS_nameserver = http_parser.o http_replyer.o helper.o mydns.o dns_lib.o nameserver.o
+BINS_TEST = mydns_test nameserver_test dns_lib_test
 BINS = proxy nameserver 
 
 .c.o:
@@ -29,18 +29,8 @@ runbothcp2:
 	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
 
-rundns1_r:
+rundns:
 	./nameserver -r nameserver_log 5.0.0.1 9999 ./topos/topo1/topo1.servers ./topos/topo1/topo1.lsa
-
-rundns1_g:
-	./nameserver nameserver_log 5.0.0.1 9999 ./topos/topo1/topo1.servers ./topos/topo1/topo1.lsa
-
-rundns2_r:
-	./nameserver -r nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
-
-rundns2_g:
-	./nameserver nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
-
 
 #
 proxy: $(OBJS_proxy)
@@ -51,18 +41,14 @@ nameserver: $(OBJS_nameserver)
 
 
 # test
-mydns_test: mydns.c dns_lib.o 
+mydns_test: mydns.c dns_lib.o
 	$(CC) $(CFLAGS) $(TESTFLAGS) $^ -o $@
 
-nameserver_test: nameserver.c dns_lib.o list.o
+nameserver_test: nameserver.c dns_lib.o
 	$(CC) $(CFLAGS) $(TESTFLAGS) $^ -o $@
 
 dns_lib_test: dns_lib.c
 	$(CC) $(CFLAGS) $(TESTFLAGS) $^ -o $@
 
-list_test: list.c
-	$(CC) $(CFLAGS) $(TESTFLAGS) $^ -o $@
-
-#
 clean:
-	rm -rf $(OBJS_proxy) $(OBJS_nameserver) $(BINS) $(BINS_TEST) *.dSYM *~
+	rm -rf $(OBJS_proxy) $(OBJS_nameserver) $(BINS) $(BINS_TEST) *.dSYM *.~
