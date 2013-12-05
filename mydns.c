@@ -12,7 +12,7 @@
 
 static const char *dns_ip = NULL;
 static unsigned int dns_port = 0;
-static char *fakeip = NULL;
+static const char *fakeip = NULL;
 
 int init_mydns(const char *ip, unsigned int port, char *fake_ip) {
   assert(ip != NULL);
@@ -21,6 +21,7 @@ int init_mydns(const char *ip, unsigned int port, char *fake_ip) {
   dns_ip = ip;
   dns_port = port;
   fakeip = fake_ip;
+  printf("init_mydns: fakeip%s\n", fakeip);
 
   return 0;
 }
@@ -63,11 +64,12 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
   memset(&fakeaddr, 0, sizeof(fakeaddr));
   fakeaddr.sin_family = AF_INET;
   fakeaddr.sin_port = htons(0);
+  printf("??mydns, bind to fakeip%s\n", fakeip);
   if (inet_aton(fakeip, &fakeaddr.sin_addr) == 0) {
     perror("Error! main, inet_aton");
     exit(-1);
   }
-
+  
   if (bind(sock, (struct sockaddr *)&fakeaddr, sizeof(fakeaddr)) == -1) {
     perror("mydns: bind fakeip\n");
     exit(-1);
