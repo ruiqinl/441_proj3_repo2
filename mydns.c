@@ -38,6 +38,8 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
   int ret;  
   int query_len;
   struct sockaddr_in fakeaddr;
+  struct sockaddr_in from_addr;
+  socklen_t from_len;
 
   // make query packet
   //dns_query = make_dns_query(node, service);
@@ -84,8 +86,8 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
   // recv
   dns_reply = (char *)calloc(BUF_SIZE, sizeof(char));
 
-  //ret_len = sizeof(struct sockaddr_in);
-  ret = recvfrom(sock, dns_reply, BUF_SIZE, 0, NULL, NULL);
+  from_len = sizeof(struct sockaddr_in);
+  ret = recvfrom(sock, dns_reply, BUF_SIZE, 0, (struct sockaddr *)&from_addr, &from_len);
   printf("resolve: recvd %s\n", dns_reply);
 
   if (ret == -1) {
