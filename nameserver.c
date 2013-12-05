@@ -6,6 +6,7 @@
 #include "helper.h"
 #include "dns_lib.h"
 #include "nameserver.h"
+#include "list.h"
 
 #ifndef TEST
 
@@ -28,9 +29,11 @@ int main(int argc, char *argv[]) {
   socklen_t client_len;
   int recv_ret, send_ret;
   struct dns_t *query = NULL;
-  struct server_t *serverlist = NULL;
-  static struct server_t *picked_server = NULL;
+  //struct server_t *serverlist = NULL;
+  struct list_node_t *serverlist = NULL;
+  //static struct server_t *picked_server = NULL;
   int reply_len = 0;
+  uint32_t next_ip;
   
   if (strcmp(argv[1], "-r") == 0) {
     round_robin = 1;
@@ -41,7 +44,7 @@ int main(int argc, char *argv[]) {
     LSAs = argv[6];
 
     serverlist = get_serverlist(servers);
-    picked_server = serverlist;
+    //picked_server = serverlist;
     
   } else {
     round_robin = 0;
@@ -97,10 +100,9 @@ int main(int argc, char *argv[]) {
       print_dns(query);
       
       if (round_robin) {
-	assert(picked_server != NULL);
 
-	reply_buf = cnd_rr(query, picked_server->server, &reply_len);
-	picked_server = picked_server->next;
+	next_ip = next_server(serverlist);
+	reply_buf = cnd_rr(query, next_ip, &reply_len);
 
       } else {
 
@@ -124,18 +126,19 @@ int main(int argc, char *argv[]) {
 
 #endif //TEST
 
-struct server_t *get_serverlist(char *servers) {
+struct list_node_t *get_serverlist(char *servers) {
   assert(servers != NULL);
   dbprintf("get_server_list:\n");
 
   //static struct server_t *server_list = NULL;
   FILE *fp = NULL;
-  struct server_t *serverlist = NULL;
+  struct list_node_t *serverlist = NULL;
   int size = 128;
   char line[size];
   struct in_addr tmp;
+  uint32_t *ip = NULL;
 
-  init_serverlist(&serverlist);
+  //init_serverlist(&serverlist);
 
   if ((fp = fopen(servers, "r")) == NULL) {
     perror("Error! cnd_rr, fopen\n");
@@ -153,13 +156,50 @@ struct server_t *get_serverlist(char *servers) {
       exit(-1);
     }
     
-    push_server(serverlist, tmp.s_addr); // uint32_t
+    // save s_addr in allocated mem
+    ip = (uint32_t *)calloc(1, sizeof(uint32_t));
+    memcpy(ip, &tmp.s_addr, sizeof(uint32_t));
+    
+    push(&serverlist, ip); // uint32_t
     memset(line, 0, size);
   }
   
-  print_serverlist(serverlist);
+  //print_list(serverlist, printer_hex);
 
   return serverlist;
+}
+
+uint32_t next_server(struct list_node_t *list) {
+  assert(list != NULL);
+
+  static int ind = 0;
+  int list_len;
+  int count = 0;
+
+  list_len = list_size(list);
+  assert(ind <= list_len);
+    
+  if (ind == list_len) 
+    ind = 0;
+
+  count = 0;
+  while (count < ind) {
+    assert(list != NULL);
+    list = list->next;
+    ++count;
+  }
+
+  ++ind;
+
+  return *(uint32_t *)list->data;
+}
+
+
+void printer_hex(void *data) {
+  assert(data != NULL);
+
+  uint32_t ip = *(uint32_t *)data;
+  printf("%x, ", ip);
 }
 
 
@@ -190,87 +230,23 @@ char *cnd_geo_dist(struct dns_t *query, int *len) {
 }
 
 
-int init_serverlist(struct server_t **list) {
-  assert(list != NULL);
-
-  *list = (struct server_t *)calloc(1, sizeof(struct server_t));
-
-  (*list)->server = 0x00;
-  (*list)->next = *list;
-  
-  return 0;
-}
-
-int push_server(struct server_t *list, uint32_t server) {
-  assert(list != NULL);
-
-  if (list->server == 0x00) {
-    //list->server = (char *)calloc(strlen(server)+1, sizeof(char));
-    //memcpy(list->server, server, strlen(server));
-    list->server = server;
-    return 0;
-  }
-
-  struct server_t *p = (struct server_t *)calloc(1, sizeof(struct server_t));
-  //p->server = (char *)calloc(strlen(server)+1, sizeof(char));
-  //memcpy(p->server, server, strlen(server));
-  p->server = server;
-  
-  p->next = list->next;
-  list->next = p;
-  
-  return 0;
-}
-
-int print_serverlist(struct server_t *list) {
-  assert(list != NULL);
-  dbprintf("print_serverlist:\n");
-  
-  struct server_t *p = NULL;
-
-  if (list->server == 0x00) {
-    printf("list is null\n");
-    return 0;
-  }
-
-  p = list;
-  do {
-    printf("%x, ", p->server);
-    p = p->next;
-  } while (p != list);
-  printf("\n");
-  
-  return 0;
-}
-
 #ifdef TEST
 
 int main(){
 
-  struct server_t *servers = NULL;
-
-  init_serverlist(&servers);
-  print_serverlist(servers);
-  
-  push_server(servers, (uint32_t)0x01);
-  print_serverlist(servers);
-
-  push_server(servers, (uint32_t)0x02);
-  print_serverlist(servers);
-
-  push_server(servers, (uint32_t)0x03);
-  print_serverlist(servers);
-  
-  printf("test circularity:\n");
-  int count;
-  for (count = 0; count < 10; count++) {
-    printf("%x, ",servers->server);
-    servers = servers->next;
-  }
-  printf("\n");
+  struct list_node_t *servers = NULL;
 
   printf("test get_serverlist:\n");
-  get_serverlist("./topos/topo1/topo1.servers");
+  servers = get_serverlist("./topos/topo2/topo2.servers");
+  print_list(servers, printer_hex);
+
+  int i;
+  uint32_t ip;
+  for (i = 0; i < 20; i++) {
+    ip = next_server(servers);
+    printf("%x, ", ip);
+  }
+  printf("\n");
 
   return 0;
 }
