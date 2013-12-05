@@ -74,8 +74,6 @@ int main(int argc, char *argv[]) {
     perror("nameserver: bind\n");
     exit(-1);
   }
-  
-  
 
   // recvfrom
   query_buf = (char *)calloc(BUF_SIZE, sizeof(char));
@@ -109,7 +107,7 @@ int main(int argc, char *argv[]) {
 	reply_buf = cnd_geo_dist(query, &reply_len);
       }
 
-      dbprintf("nameserver: send reply back to proxy\n");
+      printf("nameserver: send reply back to proxy with ip%u\n", client_addr.sin_addr.s_addr);
       assert(reply_len != 0);
       printf("??sock:%d\n", sock);
       printf("??reply_buf addr:%p\n", reply_buf);
