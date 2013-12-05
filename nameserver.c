@@ -107,11 +107,11 @@ int main(int argc, char *argv[]) {
 	reply_buf = cnd_geo_dist(query, &reply_len);
       }
 
-      printf("nameserver: send reply back to proxy with ip%u\n", client_addr.sin_addr.s_addr);
+      printf("nameserver: send reply back to proxy\n");
       assert(reply_len != 0);
       printf("??sock:%d\n", sock);
       printf("??reply_buf addr:%p\n", reply_buf);
-      printf("??client ip:%u\n", client_addr.sin_addr.s_addr);
+      printf("??client ip:%s\n", inet_ntoa(client_addr.sin_addr));
       printf("??clietn len:%d\n", client_len);
       if ((send_ret = sendto(sock, reply_buf, reply_len, 0, (struct sockaddr *)&client_addr, client_len)) != reply_len) {
 	perror("Error! nameserver, sendto\n");
