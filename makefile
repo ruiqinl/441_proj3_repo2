@@ -29,8 +29,11 @@ runbothcp2:
 	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
 
-rundns:
+rundns1:
 	./nameserver -r nameserver_log 5.0.0.1 9999 ./topos/topo1/topo1.servers ./topos/topo1/topo1.lsa
+
+rundns2:
+	./nameserver -r nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
 
 #
 proxy: $(OBJS_proxy)
