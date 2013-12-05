@@ -70,13 +70,13 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
     exit(-1);
   }
   
-  if (bind(sock, (struct sockaddr *)&fakeaddr, sizeof(fakeaddr)) == -1) {
+  if (bind(sock, (struct sockaddr *)&fakeaddr, sizeof(struct sockaddr_in)) == -1) {
     perror("mydns: bind fakeip\n");
     exit(-1);
   }
 
   // send
-  if (sendto(sock, dns_query, query_len, 0, (struct sockaddr *)&addr, sizeof(addr)) != query_len) {
+  if (sendto(sock, dns_query, query_len, 0, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) != query_len) {
     perror("Error! mydns, sendto, maybe use while");
     exit(-1);
   }
@@ -84,6 +84,7 @@ int resolve(const char *node, const char *service, const struct addrinfo *hints,
   // recv
   dns_reply = (char *)calloc(BUF_SIZE, sizeof(char));
 
+  //ret_len = sizeof(struct sockaddr_in);
   ret = recvfrom(sock, dns_reply, BUF_SIZE, 0, NULL, NULL);
   printf("resolve: recvd %s\n", dns_reply);
 

@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
     memset(query_buf, 0, BUF_SIZE);
 
     printf("nameserver: ready to recvfrom\n");
+    client_len = sizeof(struct sockaddr_in);
     recv_ret = recvfrom(sock, query_buf, BUF_SIZE, 0, (struct sockaddr *)&client_addr, &client_len);
-
     
     if (recv_ret == -1) {
       perror("Error! nameserve, recvfrom\n");
