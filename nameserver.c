@@ -185,7 +185,7 @@ int nameserver_log(const char *log, const struct sockaddr_in *client_addr, const
   }
 
   // query_name
-  query_name = query->QNAME;
+  query_name = recover_node(query->QNAME);
 
   // response
   // i.e. reply_ip
