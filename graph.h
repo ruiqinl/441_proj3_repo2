@@ -1,6 +1,7 @@
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
+#define MAX_DIST 1024
 
 struct node_t {
     int id;
@@ -21,6 +22,6 @@ int push_graph(struct pq_t *pq, struct node_t *node, int *dist);
 struct node_t *pop_graph(struct pq_t *pq, int *dist);
 int is_empty(struct pq_t *pq);
 
-int dijkstra(int graph[][7], int *visited, int *dist, int size, int s_id, int t_id);
+int dijkstra(int **graph, int *visited, int *dist, int size, int s_id, int t_id);
 
 #endif

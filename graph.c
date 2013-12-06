@@ -83,7 +83,7 @@ int is_empty(struct pq_t *pq) {
 // priority queue done
 
 
-int dijkstra(int graph[][SIZE], int *visited, int *dist, int size, int s_id, int t_id){
+int dijkstra(int **graph, int *visited, int *dist, int size, int s_id, int t_id){
     
     struct node_t s;
     struct pq_t *pq = NULL;
@@ -120,8 +120,8 @@ int dijkstra(int graph[][SIZE], int *visited, int *dist, int size, int s_id, int
 		    continue;
 		
 		dist[i] = new_dist;
-		printf("checking node_%d, ", node->id);
-		printf("new dist[%d]=%d, ", i, new_dist);
+		//printf("checking node_%d, ", node->id);
+		//printf("new dist[%d]=%d, ", i, new_dist);
 		    
 		new_node = (struct node_t *)calloc(1, sizeof(struct node_t));
 		new_node->id = i;
@@ -129,13 +129,13 @@ int dijkstra(int graph[][SIZE], int *visited, int *dist, int size, int s_id, int
 		
 		push_graph(pq, new_node, dist);
 
-		int j;
+		/*int j;
 		printf("in qp, node_id:dist are ");
 		for (j = 0; j < size; j++) {
 		    if (pq->array[j] != NULL)
-			printf("%d:%d ", pq->array[j]->id, dist[pq->array[j]->id]);
+		      //printf("%d:%d ", pq->array[j]->id, dist[pq->array[j]->id]);
 		}
-		printf("\n");
+		printf("\n");*/
 	    }
 	}
     }

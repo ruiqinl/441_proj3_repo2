@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -DDEBUG -Wall -g
 TESTFLAGS = -DTEST
 
-OBJS_proxy = proxy.o http_parser.o http_replyer.o helper.o mydns.o dns_lib.o list.o
-OBJS_nameserver = http_parser.o http_replyer.o helper.o mydns.o dns_lib.o nameserver.o list.o
+OBJS_proxy = proxy.o http_parser.o http_replyer.o helper.o mydns.o dns_lib.o list.o graph.o
+OBJS_nameserver = http_parser.o http_replyer.o helper.o mydns.o dns_lib.o nameserver.o list.o graph.o
 BINS_TEST = mydns_test nameserver_test dns_lib_test
 BINS = proxy nameserver 
 
@@ -47,7 +47,7 @@ nameserver: $(OBJS_nameserver)
 mydns_test: mydns.c dns_lib.o
 	$(CC) $(CFLAGS) $(TESTFLAGS) $^ -o $@
 
-nameserver_test: nameserver.c dns_lib.o list.o
+nameserver_test: nameserver.c dns_lib.o list.o graph.o
 	$(CC) $(CFLAGS) $(TESTFLAGS) $^ -o $@
 
 dns_lib_test: dns_lib.c

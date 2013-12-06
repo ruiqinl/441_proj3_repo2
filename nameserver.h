@@ -4,10 +4,12 @@
 #include "list.h"
 #include "helper.h"
 
-struct server_t {
-  uint32_t server; // ip
-  struct server_t *next;
+struct lsa_t {
+  char *ip;
+  int seq_num;
+  struct list_node_t *neighbors;
 };
+
 
 /**
  * Choose cnd based on round_roubin, return reply packet
@@ -19,15 +21,24 @@ struct server_t {
  * @return reply packet
  */
 char *cnd_rr(struct dns_t *query, uint32_t server_ip, int *reply_len);
-
-char *cnd_geo_dist(struct dns_t *query, int *reply_len);
+char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *servers);
 
 struct list_node_t *get_serverlist(char *servers);
-//int init_serverlist(struct server_t **list);
-//int push_server(struct server_t *list, uint32_t ip);
-//int print_serverlist(struct server_t *list);
-
 void printer_hex(void *data);
 uint32_t next_server(struct list_node_t *list);
+
+int **make_graph(char *LSAs, int *graph_size, struct list_node_t **ret_lsa_list, struct list_node_t **ret_ip_list);
+struct lsa_t *parse_line(char *line);
+void printer_lsa(void *data);
+int collect_ip(struct list_node_t **ip_list, struct lsa_t *lsa);
+int comparor_lsa(void *lsa1, void *lsa2);
+int get_graph_list(struct list_node_t **ret_nei_list, struct list_node_t **ret_ip_list, char *LSAs);
+int **get_adj_matrix(struct list_node_t *lsa_list, struct list_node_t *ip_list, int *list_size);
+int comparor_lsa_ip(void *lsa_void, void *ip_void);
+int set_adj_line(int **matrix, int line_ind, struct lsa_t *lsa, struct list_node_t *ip_list);
+int get_client_ind(struct sockaddr_in *client_addr, struct list_node_t *ip_list);
+struct list_node_t *get_server_ind(struct list_node_t *serverlist, struct list_node_t *ip_list);
+int do_dijkstra(int **graph, int graph_size, int client, int server);
+
 
 #endif
