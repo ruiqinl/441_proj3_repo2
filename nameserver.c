@@ -192,6 +192,8 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
     if (dist < min_dist) {
       min_dist = dist;
       picked_id = server_id;
+      printf("dist < min_dist: %d < %d, now ", dist, min_dist);
+      printf("picked_id:%d\n", picked_id);
     }
 
     server_p = server_p->next;
