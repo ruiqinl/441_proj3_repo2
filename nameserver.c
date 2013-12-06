@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     memset(&client_addr, 0, sizeof(client_addr));
     memset(query_buf, 0, BUF_SIZE);
 
-    printf("nameserver: ready to recvfrom\n");
+    dbprintf("nameserver: ready to recvfrom\n");
     client_len = sizeof(struct sockaddr_in);
     recv_ret = recvfrom(sock, query_buf, BUF_SIZE, 0, (struct sockaddr *)&client_addr, &client_len);
     
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
       dbprintf("nameserver: recved %d bytes\n", recv_ret);
 
       query = parse_dns(query_buf);
-      print_dns(query);
+      //print_dns(query);
       
       if (round_robin) {
 	dbprintf("nameserver: round_robin\n");
@@ -124,9 +124,9 @@ int main(int argc, char *argv[]) {
 	
 	client_ind = get_client_ind(&client_addr, ip_list);
 	server_ind_list = get_server_ind(serverlist, ip_list);
-	printf("client_ind:%d\n", client_ind);
-	printf("server_ind_list:\n");
-	print_list(server_ind_list, printer_int);
+	dbprintf("client_ind:%d\n", client_ind);
+	dbprintf("server_ind_list:\n");
+	//print_list(server_ind_list, printer_int);
 	
 	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list, ip_list);
       }
@@ -189,13 +189,13 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
 
     server_id = *(int *)(server_p->data);
     dist = do_dijkstra(graph, graph_size, client_id, server_id);
-    printf("cnd_geo_dist: dist to server_%d is %d\n", server_id, dist);
+    dbprintf("cnd_geo_dist: dist to server_%d is %d\n", server_id, dist);
       
     if (dist < min_dist) {
       min_dist = dist;
       picked_id = server_id;
-      printf("dist < min_dist: %d < %d, now ", dist, min_dist);
-      printf("picked_id:%d\n", picked_id);
+      dbprintf("dist < min_dist: %d < %d, now ", dist, min_dist);
+      dbprintf("picked_id:%d\n", picked_id);
     }
 
     server_p = server_p->next;
@@ -213,7 +213,7 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
   ip = addr.s_addr;
 
   reply = make_dns_reply(query, ip, len);
-  printf("cnd_geo_dist: choose ip %x\n", ip);
+  dbprintf("cnd_geo_dist: choose ip %x\n", ip);
 
   return reply;
 
@@ -234,7 +234,7 @@ int get_client_ind(struct sockaddr_in *client_addr, struct list_node_t *ip_list)
   client_ind = list_ind(ip_list, client_ip, comparor_str);
   assert(client_ind != -1);
 
-  printf("get_client_ind:%s, %d\n", client_ip, client_ind);
+  dbprintf("get_client_ind:%s, %d\n", client_ip, client_ind);
   return client_ind;
 }
 
@@ -325,7 +325,7 @@ int **get_adj_matrix(struct list_node_t *lsa_list, struct list_node_t *ip_list, 
   assert(lsa_list != NULL);
   assert(ip_list != NULL);
   assert(matrix_size != 0);
-  printf("get_adj_matrix:\n");
+  dbprintf("get_adj_matrix:\n");
 
   int size;
   int **matrix = NULL;

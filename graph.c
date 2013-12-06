@@ -104,7 +104,7 @@ int dijkstra(int **graph, int *visited, int *dist, int size, int s_id, int t_id)
 	visited[node->id] = 1;
 
 	if (node->id == t_id) {
-	    printf("found node_%d\n", t_id);
+	  //printf("found node_%d\n", t_id);
 	    return dist[node->id];
 	}
 	
