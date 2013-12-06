@@ -176,9 +176,11 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
   struct list_node_t *picked_server = NULL;
   char *reply = NULL;
   uint32_t ip;
+  struct list_node_t *server_p;
 
   min_dist = MAX_DIST;
   s_num = list_size(servers);
+  server_p = servers;
 
   for (i = 0; i < s_num; i++) {
 
@@ -190,7 +192,7 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
       picked_id = server_id;
     }
 
-    servers = servers->next;
+    server_p = server_p->next;
   }
 
   picked_server = list_node(servers, picked_id);
