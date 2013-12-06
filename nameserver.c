@@ -187,6 +187,7 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
 
     server_id = *(int *)(server_p->data);
     dist = do_dijkstra(graph, graph_size, client_id, server_id);
+    printf("cnd_geo_dist: dist to server_%d is %d\n", server_id, dist);
       
     if (dist < min_dist) {
       min_dist = dist;
