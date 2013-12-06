@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
   
   int reply_ip_len = 128;
   char reply_ip[reply_ip_len];
+  FILE *fp = NULL;
   
   
   if (strcmp(argv[1], "-r") == 0) {
