@@ -38,13 +38,13 @@ runbothcp2:
 	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
 runbothcp2_0.1:
-	./proxy logfile1 0.1 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.1 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
+	./proxy logfile1_0.1 0.1 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2_0.1 0.1 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
 runbothcp2_0.5:
-	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
+	./proxy logfile1_0.5 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2_0.5 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
 runbothcp2_0.9:
-	./proxy logfile1 0.9 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.9 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
+	./proxy logfile1_0.9 0.9 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2_0.9 0.9 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
 
 
