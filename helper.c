@@ -144,6 +144,7 @@ void init_buf(struct buf* bufp, int buf_sock, const char *www, struct sockaddr_i
     bufp->Bsize = 0;
     bufp->bitrate = 0;
     bufp->client_ip = (char *)calloc(128, sizeof(char));
+    bufp->server_ip = (char *)calloc(128, sizeof(char));
     bufp->chunk_name = NULL;
     bufp->recv_time = 0;
 
@@ -628,7 +629,7 @@ int logging(struct buf *bufp, double alpha, char *log) {
 
     // log
     //sprintf(line, "%ld %f %f %f %d %s %s\n", bufp->recv_time, duration, tput, avg_tput, bufp->bitrate, bufp->client_ip, bufp->chunk_name);
-    sprintf(line, "%ld %f %f %f %d %s %s\n", cur_time, duration, tput, avg_tput, bufp->bitrate, bufp->client_ip, bufp->chunk_name);
+    sprintf(line, "%ld %f %f %f %d %s %s\n", cur_time, duration, tput, avg_tput, bufp->bitrate, bufp->server_ip, bufp->chunk_name);
 
     fputs(line, fp);
 
@@ -652,6 +653,7 @@ int transfer_info(struct buf *from, struct buf *to) {
   to->client_ip = from->client_ip;
   to->bitrate = from->bitrate;
   to->chunk_name = from->chunk_name;			
+  memcpy(to->server_ip, from->server_ip, strlen(from->server_ip));
   
   return 0;
 }

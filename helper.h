@@ -190,6 +190,7 @@ struct buf {
     size_t Bsize; // done in recv_SERVER, in bytes
     int bitrate; // done in change_bitrate
     char *client_ip;// done in init_buf
+  char *server_ip;
     char *chunk_name; // done in log_chunkname
     time_t recv_time;
 };
