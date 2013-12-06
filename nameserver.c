@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
 	printf("server_ind_list:\n");
 	print_list(server_ind_list, printer_int);
 	
-	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list);
+	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list, serverlist);
       }
 
       dbprintf("nameserver: send reply back to proxy\n");      
@@ -161,11 +161,12 @@ char *cnd_rr(struct dns_t *query, uint32_t ip, int *len) {
   return reply;
 }
 
-char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *servers) {
+char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *server_list) {
   assert(query != NULL);
   assert(len != NULL);
   assert(client_id >= 0);
-  assert(servers != NULL);
+  assert(server_ind_list != NULL);
+  assert(server_list != NULL);
   
   int i;
   int s_num;
@@ -179,12 +180,12 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
   struct list_node_t *server_p;
 
   min_dist = MAX_DIST;
-  s_num = list_size(servers);
-  server_p = servers;
+  s_num = list_size(server_ind_list);
+  server_p = server_ind_list;
 
   for (i = 0; i < s_num; i++) {
 
-    server_id = *(int *)(servers->data);
+    server_id = *(int *)(server_p->data);
     dist = do_dijkstra(graph, graph_size, client_id, server_id);
       
     if (dist < min_dist) {
@@ -195,7 +196,7 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
     server_p = server_p->next;
   }
 
-  picked_server = list_node(servers, picked_id);
+  picked_server = list_node(server_list, picked_id);
   ip = *(uint32_t *)(picked_server->data);
 
   reply = make_dns_reply(query, ip, len);

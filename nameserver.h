@@ -21,7 +21,7 @@ struct lsa_t {
  * @return reply packet
  */
 char *cnd_rr(struct dns_t *query, uint32_t server_ip, int *reply_len);
-char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *servers);
+char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *server_list);
 
 struct list_node_t *get_serverlist(char *servers);
 void printer_hex(void *data);
