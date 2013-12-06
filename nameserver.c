@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
   if (strcmp(argv[1], "-r") == 0) {
     round_robin = 1;
     log = argv[2];
-    printf("?????log:%s\n",log);
     ip = argv[3];
     port = atoi(argv[4]);
     servers = argv[5];
@@ -62,7 +61,6 @@ int main(int argc, char *argv[]) {
   } else {
     round_robin = 0;
     log = argv[1];
-    printf("?????log:%s\n",log);
     ip = argv[2];
     port = atoi(argv[3]);
     servers = argv[4];
@@ -73,6 +71,12 @@ int main(int argc, char *argv[]) {
 
   }
 
+  // clear log
+  if ((fp = fopen(log, "w")) == NULL) {
+    perror("Error! nameserver, fopen");
+    exit(-1);
+  }
+  fclose(fp);
 
   // sock
   if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
