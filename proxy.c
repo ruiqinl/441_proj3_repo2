@@ -173,8 +173,8 @@ int main(int argc, char *argv[]){
 		    init_buf(buf_pts[sock], sock, "/var/www", &cli_addr, i);
 
 		    // 
-		    char *server_ip = inet_ntoa(server_addr.sin_addr);
-		    memcpy(buf_pts[sock]->server_ip, server_ip, strlen(server_ip));
+		    //char *server_ip = inet_ntoa(server_addr.sin_addr);
+		    //memcpy(buf_pts[sock]->server_ip, server_ip, strlen(server_ip));
 		    //printf("?????sock2server:%d\n", sock);
 
 		    // track maxfd 
@@ -237,7 +237,7 @@ int main(int argc, char *argv[]){
 		    } else if (buf_pts[i]->status == TO_BROWSER) {
 			
 			// throughput
-			logging(buf_pts[i], alpha, log);
+		      logging(buf_pts[i], alpha, log, &server_addr);
 			
 			close(i);			
 			reset_buf(buf_pts[i]);

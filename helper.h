@@ -227,7 +227,7 @@ void logprint(const char *log_file, const char *s);
 // for proj3
 int *getf4m(int sock);
 int *parsef4m(char *buf);
-int logging(struct buf *bufp, double alpha, char *log);
+int logging(struct buf *bufp, double alpha, char *log, struct sockaddr_in *server_addr);
 int transfer_info(struct buf *from, struct buf *to);
 
 #endif

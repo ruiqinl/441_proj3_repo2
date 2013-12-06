@@ -576,9 +576,10 @@ int *parsef4m(char *buf) {
 
 
 
-int logging(struct buf *bufp, double alpha, char *log) {
+int logging(struct buf *bufp, double alpha, char *log, struct sockaddr_in *server_addr) {
     assert(bufp != NULL);
     assert(log != NULL);
+    assert(server_addr != NULL);
 
     //assert(bufp->ts != 0);
     //assert(bufp->tf != 0);
@@ -629,7 +630,7 @@ int logging(struct buf *bufp, double alpha, char *log) {
 
     // log
     //sprintf(line, "%ld %f %f %f %d %s %s\n", bufp->recv_time, duration, tput, avg_tput, bufp->bitrate, bufp->client_ip, bufp->chunk_name);
-    sprintf(line, "%ld %f %f %f %d %s %s\n", cur_time, duration, tput, avg_tput, bufp->bitrate, bufp->server_ip, bufp->chunk_name);
+    sprintf(line, "%ld %f %f %f %d %s %s\n", cur_time, duration, tput, avg_tput, bufp->bitrate, inet_ntoa(server_addr->sin_addr), bufp->chunk_name);
 
     fputs(line, fp);
 
@@ -653,7 +654,7 @@ int transfer_info(struct buf *from, struct buf *to) {
   to->client_ip = from->client_ip;
   to->bitrate = from->bitrate;
   to->chunk_name = from->chunk_name;			
-  memcpy(to->server_ip, from->server_ip, strlen(from->server_ip));
+  //memcpy(to->server_ip, from->server_ip, strlen(from->server_ip));
   
   return 0;
 }
