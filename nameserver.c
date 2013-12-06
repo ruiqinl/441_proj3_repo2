@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
     LSAs = argv[5];
 
     graph = make_graph(LSAs, &graph_size, &lsa_list, &ip_list);
-    serverlist = get_serverlist(servers);
 
   }
 
@@ -120,7 +119,6 @@ int main(int argc, char *argv[]) {
 	assert(graph_size > 0);
 	assert(lsa_list != NULL);
 	assert(ip_list != NULL);
-	assert(serverlist != NULL);
 	
 	client_ind = get_client_ind(&client_addr, ip_list);
 	server_ind_list = get_server_ind(serverlist, ip_list);
@@ -128,7 +126,7 @@ int main(int argc, char *argv[]) {
 	printf("server_ind_list:\n");
 	print_list(server_ind_list, printer_int);
 	
-	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list, serverlist);
+	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list, ip_list);
       }
 
       dbprintf("nameserver: send reply back to proxy\n");      
@@ -161,12 +159,12 @@ char *cnd_rr(struct dns_t *query, uint32_t ip, int *len) {
   return reply;
 }
 
-char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *server_list) {
+char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *ip_list) {
   assert(query != NULL);
   assert(len != NULL);
   assert(client_id >= 0);
   assert(server_ind_list != NULL);
-  assert(server_list != NULL);
+  assert(ip_list != NULL);
   
   int i;
   int s_num;
@@ -177,7 +175,9 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
   struct list_node_t *picked_server = NULL;
   char *reply = NULL;
   uint32_t ip;
+  char *ip_str = NULL;
   struct list_node_t *server_p;
+  struct in_addr addr;
 
   min_dist = MAX_DIST;
   s_num = list_size(server_ind_list);
@@ -199,8 +199,16 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
     server_p = server_p->next;
   }
 
-  picked_server = list_node(server_list, picked_id);
-  ip = *(uint32_t *)(picked_server->data);
+  picked_server = list_node(ip_list, picked_id);
+  ip_str = (char *)(picked_server->data);
+  
+  memset(&addr, 0, sizeof(addr));
+  if (inet_aton(ip_str, &addr) == 0) {
+    perror("Error! cnd_geo_dist, inet_aton\n");
+    exit(-1);
+  }
+
+  ip = addr.s_addr;
 
   reply = make_dns_reply(query, ip, len);
   printf("cnd_geo_dist: choose ip %x\n", ip);
