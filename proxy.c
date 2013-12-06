@@ -172,11 +172,6 @@ int main(int argc, char *argv[]){
 		    buf_pts[sock] = (struct buf*)calloc(1, sizeof(struct buf));
 		    init_buf(buf_pts[sock], sock, "/var/www", &cli_addr, i);
 
-		    // 
-		    //char *server_ip = inet_ntoa(server_addr.sin_addr);
-		    //memcpy(buf_pts[sock]->server_ip, server_ip, strlen(server_ip));
-		    //printf("?????sock2server:%d\n", sock);
-
 		    // track maxfd 
 		    if (sock > maxfd)
 			maxfd = sock;
