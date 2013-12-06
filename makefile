@@ -12,7 +12,14 @@ BINS = proxy nameserver
 
 all: $(BINS) $(BINS_TEST)
 
-#
+proxy: $(OBJS_proxy)
+	$(CC) $(CFLAGS) $^ -o $@
+
+nameserver: $(OBJS_nameserver)
+	$(CC) $(CFLAGS) $^ -o $@
+
+
+# run
 run1cp1:
 	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 3.0.0.1
 run2cp1:
@@ -30,6 +37,16 @@ runbothcp1:
 runbothcp2:
 	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
 
+runbothcp2_0.1:
+	./proxy logfile1 0.1 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.1 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
+
+runbothcp2_0.5:
+	./proxy logfile1 0.5 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.5 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
+
+runbothcp2_0.9:
+	./proxy logfile1 0.9 8888 1.0.0.1 5.0.0.1 9999 >printf1.txt & ./proxy logfile2 0.9 8889 2.0.0.1 5.0.0.1 9999 > printf2.txt &
+
+
 
 rundns1_r:
 	./nameserver -r nameserver_log 5.0.0.1 9999 ./topos/topo1/topo1.servers ./topos/topo1/topo1.lsa
@@ -43,13 +60,6 @@ rundns2_r:
 rundns2_g:
 	./nameserver nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
 
-
-#
-proxy: $(OBJS_proxy)
-	$(CC) $(CFLAGS) $^ -o $@
-
-nameserver: $(OBJS_nameserver)
-	$(CC) $(CFLAGS) $^ -o $@
 
 
 # test
