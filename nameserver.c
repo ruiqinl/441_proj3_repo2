@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
     servers = argv[4];
     LSAs = argv[5];
 
+    serverlist = get_serverlist(servers);
     graph = make_graph(LSAs, &graph_size, &lsa_list, &ip_list);
 
   }
@@ -119,6 +120,7 @@ int main(int argc, char *argv[]) {
 	assert(graph_size > 0);
 	assert(lsa_list != NULL);
 	assert(ip_list != NULL);
+	assert(serverlist != NULL);
 	
 	client_ind = get_client_ind(&client_addr, ip_list);
 	server_ind_list = get_server_ind(serverlist, ip_list);
