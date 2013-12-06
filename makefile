@@ -41,7 +41,7 @@ rundns2_r:
 	./nameserver -r nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
 
 rundns2_g:
-	./nameserver -nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
+	./nameserver nameserver_log 5.0.0.1 9999 ./topos/topo2/topo2.servers ./topos/topo2/topo2.lsa
 
 
 #
