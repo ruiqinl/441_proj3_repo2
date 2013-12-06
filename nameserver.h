@@ -20,8 +20,8 @@ struct lsa_t {
  *
  * @return reply packet
  */
-char *cnd_rr(struct dns_t *query, uint32_t server_ip, int *reply_len);
-char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *server_list);
+char *cnd_rr(struct dns_t *query, uint32_t ip, int *len, char *reply_ip, int reply_ip_len);
+char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *ip_list, char *reply_ip, int reply_ip_len);
 
 struct list_node_t *get_serverlist(char *servers);
 void printer_hex(void *data);
@@ -40,5 +40,6 @@ int get_client_ind(struct sockaddr_in *client_addr, struct list_node_t *ip_list)
 struct list_node_t *get_server_ind(struct list_node_t *serverlist, struct list_node_t *ip_list);
 int do_dijkstra(int **graph, int graph_size, int client, int server);
 
+int nameserver_log(const char *log, const struct sockaddr_in *client_addr, const struct dns_t *query, char *reply_ip);
 
 #endif

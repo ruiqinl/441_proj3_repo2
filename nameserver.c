@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 
 #include "helper.h"
 #include "dns_lib.h"
@@ -42,6 +43,10 @@ int main(int argc, char *argv[]) {
   struct list_node_t *ip_list = NULL;
   int client_ind;//, server_ind;
   struct list_node_t *server_ind_list = NULL;
+  
+  int reply_ip_len = 128;
+  char reply_ip[reply_ip_len];
+  
   
   if (strcmp(argv[1], "-r") == 0) {
     round_robin = 1;
@@ -112,7 +117,7 @@ int main(int argc, char *argv[]) {
 	dbprintf("nameserver: round_robin\n");
 
 	next_ip = next_server(serverlist);
-	reply_buf = cnd_rr(query, next_ip, &reply_len);
+	reply_buf = cnd_rr(query, next_ip, &reply_len, reply_ip, reply_ip_len);
 
       } else {
 	dbprintf("nameserver: geo_dist\n");
@@ -128,7 +133,7 @@ int main(int argc, char *argv[]) {
 	dbprintf("server_ind_list:\n");
 	//print_list(server_ind_list, printer_int);
 	
-	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list, ip_list);
+	reply_buf = cnd_geo_dist(query, &reply_len, graph, graph_size, client_ind, server_ind_list, ip_list, reply_ip, reply_ip_len);
       }
 
       dbprintf("nameserver: send reply back to proxy\n");      
@@ -141,6 +146,9 @@ int main(int argc, char *argv[]) {
       free(reply_buf);
     }
 
+    // log
+    nameserver_log(log, &client_addr, query, reply_ip);
+    
   }
   
   free(query_buf);
@@ -148,20 +156,78 @@ int main(int argc, char *argv[]) {
 
 #endif //TEST
 
+int nameserver_log(const char *log, const struct sockaddr_in *client_addr, const struct dns_t *query, char *reply_ip) {
+  assert(log != NULL);
+  assert(client_addr != NULL);
+  assert(query != NULL);
+  assert(reply_ip != NULL);
 
-char *cnd_rr(struct dns_t *query, uint32_t ip, int *len) {
+  time_t cur_time;
+  char *client_ip = NULL;
+  char *query_name = NULL;
+  char logline[1024];
+  FILE *fp = NULL;
+
+  // time
+  time(&cur_time); 
+
+  // client_ip
+  if ((client_ip = inet_ntoa(client_addr->sin_addr)) == NULL) {
+    perror("Error! get_clietn_ind, inet_ntoa");
+    exit(-1);
+  }
+
+  // query_name
+  query_name = query->QNAME;
+
+  // response
+  // i.e. reply_ip
+    
+  //
+  memset(logline, 0, sizeof(logline));
+  sprintf(logline, "%ld %s %s %s\n", cur_time, client_ip, query_name, reply_ip);
+    
+  if ((fp = fopen(log, "a")) == NULL) {
+    perror("Error! nameserver, fopen");
+    exit(-1);
+  }
+
+  fputs(logline, fp);
+
+  fclose(fp);
+
+  return 0;
+}
+
+
+char *cnd_rr(struct dns_t *query, uint32_t ip, int *len, char *reply_ip, int reply_ip_len) {
   assert(query != NULL);
   assert(ip != 0x00);
 
   char *reply = NULL;
+  struct in_addr addr;
+  char *tmp = NULL;
   
   reply = make_dns_reply(query, ip, len);
   dbprintf("cnd_rr: choose ip %x\n", ip);
 
+  // fill ip
+  memset(&addr, 0, sizeof(addr));
+  addr.s_addr = ip;
+  
+  if ((tmp = inet_ntoa(addr)) == NULL) {
+    perror("Error! cnd_rr, inet_ntoa");
+    exit(-1);
+  }
+  
+  assert(reply_ip_len > strlen(tmp));
+  memset(reply_ip, 0, reply_ip_len);
+  memcpy(reply_ip, tmp, strlen(tmp));
+
   return reply;
 }
 
-char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *ip_list) {
+char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, int client_id, struct list_node_t *server_ind_list, struct list_node_t *ip_list, char *reply_ip, int reply_ip_len) {
   assert(query != NULL);
   assert(len != NULL);
   assert(client_id >= 0);
@@ -214,6 +280,11 @@ char *cnd_geo_dist(struct dns_t *query, int *len, int **graph, int graph_size, i
 
   reply = make_dns_reply(query, ip, len);
   dbprintf("cnd_geo_dist: choose ip %x\n", ip);
+
+  // fill ip
+  assert(reply_ip_len > strlen(ip_str));
+  memset(reply_ip, 0, reply_ip_len);
+  memcpy(reply_ip, ip_str, strlen(ip_str));
 
   return reply;
 
